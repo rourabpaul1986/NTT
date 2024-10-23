@@ -1,6 +1,77 @@
 import math
 import random
 import numpy as np
+import ast
+import random
+#########################library to open nayuki website##############################
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+from datetime import datetime
+from selenium.common.exceptions import TimeoutException
+import time
+import os
+from datetime import datetime
+import webdriver_manager
+import selenium
+import sys
+import argparse
+import threading
+##################################################################################
+chrome_options = Options()
+chrome_options.add_argument("--headless")  # Enable headless mode
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--window-size=1920x1080") 
+# Optionally, you can use ChromeDriverManager for automatic management of the driver
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+#driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+link="https://www.nayuki.io/page/number-theoretic-transform-integer-dft"
+driver.get(link)
+# Locate the input element by its ID and set the value
+input_element0 = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "circular-convolution-input-vector-0"))
+)
+
+input_element1 = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "circular-convolution-input-vector-1"))
+)
+input_element0.clear()  # Clear any existing value
+input_element1.clear()  # Clear any existing value
+
+input_elementm = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "circular-convolution-minimum-working-modulus"))
+)
+input_elementm.clear()  # Clear any existing value
+
+input_elementw = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "circular-convolution-nth-root-of-unity"))
+)
+input_elementw.clear()  # Clear any existing value
+###########################################################################################
+def flip_random_bits(binary_str, n):
+    # Convert binary string to a list of characters for mutability
+    binary_list = list(binary_str)
+    
+    # Get the length of the binary number
+    length = len(binary_list)
+    
+    # Select n random positions in the binary string to flip
+    positions = random.sample(range(length), n)
+    
+    # Flip the bits at the chosen positions
+    for pos in positions:
+        # Flip the bit: if it's '0', change to '1', and vice versa
+        binary_list[pos] = '1' if binary_list[pos] == '0' else '0'
+    
+    # Convert the list back to a string and return it
+    return ''.join(binary_list)
 def rule_check(l, w, N):
     if(l%w!=0):
      print(f"Error: l={l} must be divisible by w={w}")
@@ -19,23 +90,41 @@ def l_binary(decimal, l):
  #print(f"{l} bit Binary representation of {decimal} is {binary}")
  return binary
 
-def word_wise_montgomery_multiplication(A, B, N, N_prime, l, w, b, R):
+def word_wise_montgomery_multiplication(A, B, N, N_prime, l, w, b, R, f):
     T=0
     m=l//w
+    fault=[0]*m
+    ####################################
+    unfault_A=A
+    #fault_A = flip_random_bits(A, f)
+    #fault_A = A
+    ####################################
+    #xor_result = int(A,2) ^ int(fault_A,2)
+    #result_str = bin(xor_result)[2:].zfill(len(A))
+    #print(f"A: {A}, fault_A: {fault_A} no. of fault: {result_str} ")
+    
     for i in range(m):
-       Aw=A[-w:]
+       T0=T%b
        B0=B[-w:]
+       #########################################
+       Aw=unfault_A[-w:]       
+       k=random.randint(0, 10)
+       Awf=(int(unfault_A[-w:],2)+(k*N))%N
+       #########################################       
        #print(f"Aw is {Aw} & B0 is {B0}")
-       u=((T+int(Aw,2)*int(B0,2))*N_prime) % b
+       u=((T0+int(Aw,2)*int(B0,2))*N_prime) % b
+       u_f=((T0+Awf*int(B0,2))*N_prime) % b
+       if(u!=u_f):
+        fault[i]=1
+       print(f"Aw: {int(Aw,2)%N}, Awf: {Awf}, B0:{B0}; N_prime:{N_prime}; T0: {T0}; u: {u} & u_f: {u_f} ")
        
-       #print(f"u{i} is {u}")
        T=(T  +  (int(Aw,2)*int(B,2)) + (u*N)) // b
-       #print(f"T{i} is {T}")
-       A = A[:-w] 
+       unfault_A = unfault_A[:-w] 
     # Step 4: Check if T >= N and perform final subtraction if necessary
     if T >= N:
      T = T-N
     T=T*R % N
+    print(f"fault:{fault}")
     return T
 
 
@@ -44,7 +133,7 @@ def generate_random_numbers(n, a, b):
     return random_numbers
 
 
-def mont_mult_top(l, w, A, B, N):
+def mont_mult_top(l, w, A, B, N, f):
 
     b=2**w 
     N_prime=pow(-N,-1, b)
@@ -54,7 +143,7 @@ def mont_mult_top(l, w, A, B, N):
     B_bin = l_binary(B, l)
     N_bin = l_binary(N, l)
     #print(f"N_prime {N_prime}")
-    result = word_wise_montgomery_multiplication(A_bin, B_bin, N, N_prime, l, w, b, R)
+    result= word_wise_montgomery_multiplication(A_bin, B_bin, N, N_prime, l, w, b, R, f)
     #print(f"The result of Montgomery multiplication is: {result}")
     return result
 
@@ -99,19 +188,22 @@ def bit_reverse(x, n):
             x_out[i] = x[bit_reverse(i, n)]
         return x_out
 
-def CT_Butterfly(x_out, A, twiddle_factor, M, length):
+def CT_Butterfly(x_out, A, twiddle_factor, M, length, f):
     l=16
     w=4
+    #print(f"tomega: {twiddle_factor}")
     if length <= 1:
         x_out[0] = A[0]
         return x_out
     halflen = length >> 1
     for i in range(halflen):
         u = A[i]
-        #v = modmult(A[i + halflen], twiddle_factor, M)
+        #v = modmult(A[i + halflen], twiddle_factor, M) # this line should be on for school book multiplication
         #print(f"Ai:{A[i + halflen]}")
         #print(f"omega:{twiddle_factor}")
-        v=mont_mult_top(l, w, A[i + halflen], twiddle_factor, M)
+        
+        v=mont_mult_top(l, w, A[i + halflen], twiddle_factor, M, f)
+       
         x_out[i] = (u + v) % M
         x_out[i + halflen] = (u - v) % M
     return x_out
@@ -127,11 +219,11 @@ class fNTT:
         self.alpha = alpha or find_primitive(N, M)
         if self.alpha == 0:
             raise ValueError('No primitive root exists')
-
+        print(f"unitial omega: {self.alpha}")
         self.alpha_modpow_table = [modpow(self.alpha, i, M) for i in range(N+1)]
         self.bit_reverse_table = [bit_reverse(i, self.Nlen - 1) for i in range(N // 2)]
 
-    def forward(self, x_in):
+    def forward(self, x_in, f):
         if len(x_in) != self.N:
             raise ValueError(f'Input should be sized {self.N}')
         x = np.copy(x_in)
@@ -140,7 +232,7 @@ class fNTT:
             seqlen = self.N // n
             for j in range(n):
                 twiddle_factor = self.alpha_modpow_table[self.bit_reverse_table[j]]
-                CT_Butterfly(x[seqlen * j: seqlen * (j + 1)], x[seqlen * j: seqlen * (j + 1)], twiddle_factor, self.M, seqlen)
+                CT_Butterfly(x[seqlen * j: seqlen * (j + 1)], x[seqlen * j: seqlen * (j + 1)], twiddle_factor, self.M, seqlen, f)
         return bit_reverse([i % self.M for i in x], self.Nlen)
 
     def inverse(self, x_in):
@@ -152,18 +244,18 @@ class fNTT:
             seqlen = self.N // n
             for j in range(n):
                 twiddle_factor = self.alpha_modpow_table[self.N - self.bit_reverse_table[j]]
-                CT_Butterfly(x[seqlen * j: seqlen * (j + 1)], x[seqlen * j: seqlen * (j + 1)], twiddle_factor, self.M, seqlen)
+                CT_Butterfly(x[seqlen * j: seqlen * (j + 1)], x[seqlen * j: seqlen * (j + 1)], twiddle_factor, self.M, seqlen, f)
         x = [modmult(i, self.Ninv, self.M) for i in x]
         return bit_reverse(x, self.Nlen)
 def check_arrays(array1, array2):
     if len(array1) != len(array2):
-        print("Wrong: Arrays have different lengths.")
+        print(f"Wrong: Arrays have different lengths. {len(array1)} {len(array2)}")
         return False
     for i in range(len(array1)):
         if array1[i] != array2[i]:
             print(f"Wrong: Elements at index {i} are different ({array1[i]} != {array2[i]}).")
             return False
-    print("Correct: All elements match.")
+    print("Bingo !!  All elements match.")
     return True
 if __name__ == "__main__":
     N = 16  # Size of the input sequence, must be a power of 2
@@ -176,17 +268,36 @@ if __name__ == "__main__":
     #N = 72639     # Modulus
     #N = 7681     # Modulus
     #omega=3383
-    
+    f=3 # number of fault bit
     A = generate_random_numbers(N, 0, M)
-    print(f"Original input sequence: {A}")
-    ntt_A = ntt.forward(A)
-    print(f"NTT Result: {ntt_A}")
+    B = generate_random_numbers(N, 0, M)
+    print(f"Input Polynomial A of degree {len(A)-1}: {A}")
+    print(f"Input Polynomial B of degree {len(B)-1}: {B}")
+    ntt_A = ntt.forward(A, f)
+    ntt_B = ntt.forward(B, f)
+    print(f"Forward NTT of A: {ntt_A}")
+    print(f"Forward NTT of B: {ntt_B}")
+    A_str = str(A)
+    input_element0.send_keys(A_str)
+    B_str = str(B)
+    input_element1.send_keys(B_str)
+    input_elementm.send_keys(M)
+    button = WebDriverWait(driver, 10).until(
+    EC.element_to_be_clickable((By.ID, "circular-convolution-calculate")))
+    button.click()
+    
+    output_element = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "circular-convolution-output-vector")))
+    output_nayuki = output_element.text
+    
+
     ntt_mult = [0] * N  # Creates a list with 5 elements, all initialized to 0
     for i in range(N):
-    	ntt_mult[i]=mont_mult_top(l, w, ntt_A[i], ntt_A[i], M)
+    	ntt_mult[i]=mont_mult_top(l, w, ntt_A[i], ntt_B[i], M, f)
     print(f"ntt_mult: {ntt_mult}")
     inv_ntt_mult = ntt.inverse(ntt_mult)
-    print(f"Inverse NTT Mult: {inv_ntt_mult}")
+    print(f"\033[31m Final NTT mult Result (after Inverse NTT): {inv_ntt_mult} \033[0m")
+    print(f"\033[31m Output vector from [https://www.nayuki.io/] is: {output_nayuki} \033[0m")
     #inv_ntt_A = ntt.inverse(ntt_A)
     #print(f"Inverse NTT Result (should match original): {inv_ntt_A}")
-    #check_arrays(A, inv_ntt_A)
+    check_arrays(inv_ntt_mult, ast.literal_eval(output_nayuki))
