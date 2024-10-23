@@ -96,7 +96,7 @@ def word_wise_montgomery_multiplication(A, B, N, N_prime, l, w, b, R, f):
     fault=[0]*m
     ####################################
     unfault_A=A
-    #fault_A = flip_random_bits(A, f)
+    fault_A = flip_random_bits(A, f)
     #fault_A = A
     ####################################
     #xor_result = int(A,2) ^ int(fault_A,2)
@@ -107,9 +107,10 @@ def word_wise_montgomery_multiplication(A, B, N, N_prime, l, w, b, R, f):
        T0=T%b
        B0=B[-w:]
        #########################################
-       Aw=unfault_A[-w:]       
+       Aw=fault_A[-w:] 
+       At=unfault_A[-w:] 
        k=random.randint(0, 10)
-       Awf=(int(unfault_A[-w:],2)+(k*N))%N
+       Awf=(int(At,2)+(k*N))%N
        #########################################       
        #print(f"Aw is {Aw} & B0 is {B0}")
        u=((T0+int(Aw,2)*int(B0,2))*N_prime) % b
@@ -119,6 +120,7 @@ def word_wise_montgomery_multiplication(A, B, N, N_prime, l, w, b, R, f):
        print(f"Aw: {int(Aw,2)%N}, Awf: {Awf}, B0:{B0}; N_prime:{N_prime}; T0: {T0}; u: {u} & u_f: {u_f} ")
        
        T=(T  +  (int(Aw,2)*int(B,2)) + (u*N)) // b
+       fault_A = fault_A[:-w] 
        unfault_A = unfault_A[:-w] 
     # Step 4: Check if T >= N and perform final subtraction if necessary
     if T >= N:
@@ -268,7 +270,7 @@ if __name__ == "__main__":
     #N = 72639     # Modulus
     #N = 7681     # Modulus
     #omega=3383
-    f=3 # number of fault bit
+    f=0 # number of fault bit
     A = generate_random_numbers(N, 0, M)
     B = generate_random_numbers(N, 0, M)
     print(f"Input Polynomial A of degree {len(A)-1}: {A}")
