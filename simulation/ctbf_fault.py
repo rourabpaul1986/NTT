@@ -23,37 +23,7 @@ import selenium
 import sys
 import argparse
 import threading
-##################################################################################
-'''chrome_options = Options()
-chrome_options.add_argument("--headless")  # Enable headless mode
-chrome_options.add_argument("--no-sandbox")
-chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.add_argument("--window-size=1920x1080") 
-# Optionally, you can use ChromeDriverManager for automatic management of the driver
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
-#driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-link="https://www.nayuki.io/page/number-theoretic-transform-integer-dft"
-driver.get(link)
-# Locate the input element by its ID and set the value
-input_element0 = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.ID, "circular-convolution-input-vector-0"))
-)
 
-input_element1 = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.ID, "circular-convolution-input-vector-1"))
-)
-input_element0.clear()  # Clear any existing value
-input_element1.clear()  # Clear any existing value
-
-input_elementm = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.ID, "circular-convolution-minimum-working-modulus"))
-)
-input_elementm.clear()  # Clear any existing value
-
-input_elementw = WebDriverWait(driver, 10).until(
-    EC.presence_of_element_located((By.ID, "circular-convolution-nth-root-of-unity"))
-)
-input_elementw.clear()  # Clear any existing value'''
 ###########################################################################################
 def contains_one(arr):
     return 1 if any(arr) else 0
