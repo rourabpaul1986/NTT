@@ -23,10 +23,72 @@ import selenium
 import sys
 import argparse
 import threading
+##################################################################################
+'''chrome_options = Options()
+chrome_options.add_argument("--headless")  # Enable headless mode
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--window-size=1920x1080") 
+# Optionally, you can use ChromeDriverManager for automatic management of the driver
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+#driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+link="https://www.nayuki.io/page/number-theoretic-transform-integer-dft"
+driver.get(link)
+# Locate the input element by its ID and set the value
+input_element0 = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "circular-convolution-input-vector-0"))
+)
 
+input_element1 = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "circular-convolution-input-vector-1"))
+)
+input_element0.clear()  # Clear any existing value
+input_element1.clear()  # Clear any existing value
+
+input_elementm = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "circular-convolution-minimum-working-modulus"))
+)
+input_elementm.clear()  # Clear any existing value
+
+input_elementw = WebDriverWait(driver, 10).until(
+    EC.presence_of_element_located((By.ID, "circular-convolution-nth-root-of-unity"))
+)
+input_elementw.clear()  # Clear any existing value'''
 ###########################################################################################
 def contains_one(arr):
     return 1 if any(arr) else 0
+
+def flip_burst_bit(binary_str, n):
+    """
+    Flip n consecutive bits in a binary string at a random position.
+
+    Args:
+    binary_str (str): Input binary string.
+    n (int): Number of consecutive bits to flip.
+
+    Returns:
+    str: Binary string with n consecutive bits flipped.
+    """
+    # Convert binary string to a list of characters for mutability
+    binary_list = list(binary_str)
+    
+    # Get the length of the binary string
+    length = len(binary_list)
+    
+    # Ensure we can flip n bits
+    if n > length:
+        raise ValueError("Burst size n cannot be larger than the binary string length.")
+    
+    # Choose a random starting position for the burst
+    start_pos = random.randint(0, length - n)
+    
+    # Flip n consecutive bits starting from start_pos
+    for i in range(start_pos, start_pos + n):
+        binary_list[i] = '1' if binary_list[i] == '0' else '0'
+    
+    # Convert the list back to a string and return it
+    return ''.join(binary_list)
+
 
 def flip_random_bits(binary_str, n):
     # Convert binary string to a list of characters for mutability
@@ -72,6 +134,7 @@ def word_wise_montgomery_multiplication(A, B, N, N_prime, l, w, b, R, f, fault_m
     unfault_A=A
     if(fault_mode=='A' or fault_mode=='AB'):
      fault_A = flip_random_bits(A, f)
+     #fault_A =flip_burst_bit(A, f)
     else:
      fault_A = A
     
@@ -79,6 +142,7 @@ def word_wise_montgomery_multiplication(A, B, N, N_prime, l, w, b, R, f, fault_m
     unfault_B=B
     if(fault_mode=='B' or fault_mode=='AB'):
      fault_B = flip_random_bits(B, f)
+     #fault_B =flip_burst_bit(B, f)
     else:
      fault_B = B
     ####################################
@@ -266,24 +330,8 @@ def check_arrays(array1, array2):
     print("Bingo !!  All elements match.")
     return True
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process fault tolerance level and verbose mode.")
-    parser.add_argument("-f", "--fault", type=int, required=True, help="Fault tolerance level (integer value)")
-    parser.add_argument("-s", "--samples", type=int, required=True, help="Sample Size (integer value)")
-    parser.add_argument("-m", "--mode", type=str, required=True, help="fault mode")
-    parser.add_argument("-c", "--check_node", type=str, required=True, help="fault mode")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose mode")
 
 
-    args = parser.parse_args()
-
-    # Accessing the arguments
-    fault_level = args.fault
-    verbose_mode = args.verbose
-    sample_size = args.samples
-    fault_mode=args.mode
-    check_node = args.check_node
-    if verbose_mode:
-       print("Verbose mode activated")
 
     N = 16  # Size of the input sequence, must be a power of 2, degree of polynomial 
     #N = 256  # Size of the input sequence, must be a power of 2, degree of polynomial 
@@ -291,15 +339,44 @@ if __name__ == "__main__":
     #M = 8380417  # A prime number for modulus
     ntt = fNTT(N, M)
     l = 24 #lenth of binary bits
-    w = 4  # how many binary bits will be processed
+    #w = 4  # how many binary bits will be processed
 
    
     detect=0
     ef=0
-    f=args.fault
+    parser = argparse.ArgumentParser(description="Process fault tolerance level and verbose mode.")
+    parser.add_argument("-f", "--fault", type=int, required=True, help="Fault tolerance level (integer value)")
+    parser.add_argument("-s", "--samples", type=int, required=True, help="Sample Size (integer value)")
+    parser.add_argument("-m", "--mode", type=str, required=True, help="fault mode: A=faulty bit(s) in multiplicand, B=faulty bit(s) in multiplyier, AB=faulty bit(s) in multiplicand and multiplier")
+    parser.add_argument("-c", "--check_node", type=str, required=True, help="fault mode")
+    parser.add_argument("-w", "--word_size", type=int, required=True, help="word size")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose mode")
+
+
+    args = parser.parse_args()
+
+    # Accessing the arguments
+    f = args.fault
+    verbose_mode = args.verbose
+    sample_size = args.samples
+    fault_mode=args.mode
+    check_node = args.check_node
+    w=args.word_size
+    
+    
     if (f>=l):
      print(f"Number of fault bit: {f} cannot be greater than or equal l: {l}")
      sys.exit(1)
+    if (l%w!=0):
+     print(f" l: {l} must be divisible by w: {w}")
+     sys.exit(1) 
+     
+    if verbose_mode:
+       print("Verbose mode activated")
+
+
+    
+
 
     for i in range(sample_size):
      A = generate_random_numbers(N, 0, M)
@@ -309,6 +386,6 @@ if __name__ == "__main__":
     ef=(detect*100)/((N-1)*sample_size)
      
 
-    print(f"Efficiency: {ef} for {((N-1)*sample_size)} samples, fault bits:{f}")
+    print(f"Efficiency..: {ef} for {((N-1)*sample_size)} samples, fault bits:{f}")
     #print(f"Forward NTT of A: {ntt_A}")
    
