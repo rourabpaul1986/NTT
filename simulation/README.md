@@ -8,8 +8,7 @@ if -m=B it means fault will be injected in B only
 if -m=AB it means fault will be injected in AB only
 
 ### 1. open
-```python3 ctbf_fault.py -f 1 -s 1000 -m B -c UT -w 4
-```
+```python3 ctbf_fault.py -f 1 -s 1000 -m B -c UT -w 4```
 
 
 
