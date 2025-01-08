@@ -35,10 +35,10 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity tb_barrett is
     generic (
-        L : integer := 16;        -- Length of the operands
-        w : integer := 4;         -- Width of the segments
-        k : integer := 32;         -- 2*l
-        mu : integer := 59127;         -- # Equivalent to 2^k // N
+        L : integer := 20;        -- Length of the operands
+        w : integer := 20;         -- Width of the segments
+        --mu : integer := 59127;         -- # Equivalent to 2^k // N
+        --mu : integer := 15136656;
         N : integer := 72639    -- The modulus       
         
     );
@@ -64,8 +64,7 @@ begin
         generic map (
             L => L,
             w=>w,
-            k => k,
-            mu => mu,
+            --mu => mu,
             N=>N
         )
         port map (
