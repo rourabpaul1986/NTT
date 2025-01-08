@@ -36,7 +36,7 @@ entity barrett_top is
     generic (
         L : integer := 16;        -- Length of the operands
         w : integer := 8;         -- Width of the segments
-        mu : integer := 59127;         -- # Equivalent to 2^k // N
+        --mu : integer := 59127;         -- # Equivalent to 2^k // N
         N : integer := 72639    -- The modulus    
     );
     Port (
@@ -53,12 +53,13 @@ end barrett_top;
 
 architecture Behavioral of barrett_top is
    -- State definitions
-    type state_type is (IDLE, C_COM, Q_COM, T_COM,  i_CHK, FINALIZE);
+    type state_type is (IDLE, C_COM, Q_COM, T_COM, R2_COM, R3_com, i_CHK, FINALIZE);
     signal state : state_type;
 
     -- Constants
 
     constant k : integer := 2*l; --32 for w=4
+    constant mu : integer := (2**(2*l)) / n; --2^k//n
     --constant s : integer := 2*w+((w-1+w-1)*w); --32 for w=4
     constant s : integer := 2*w+((l/w-1+l/w-1)*w); --32 for w=4
     
@@ -121,21 +122,39 @@ begin
               when Q_COM=>                            
                  --Q <= zero_qpad & std_logic_vector(to_unsigned(to_integer(unsigned(C_shift)) * mu, Q'length)(2*s-1 downto k));
                  --Q <= std_logic_vector(to_unsigned(to_integer(unsigned(C_shift)) * mu, Q'length));
+                -- Q <= std_logic_vector(resize(unsigned(C_shift) * to_unsigned(mu, C_shift'length), Q'length)); --c_shift*mu
                  Q <= std_logic_vector(resize(unsigned(C_shift) * to_unsigned(mu, C_shift'length), Q'length)); --c_shift*mu
+                
                  state <= T_COM;
                   
              when T_COM=>  
                  --R<=Q(2*s-1 downto s);
                  R1 <= std_logic_vector(resize(unsigned(Q(2*s-1 downto s)) * to_unsigned(N, R1'length), R1'length)); -- q * n
-                 R2<= std_logic_vector(resize(unsigned(C_shift) - unsigned(std_logic_vector(resize(unsigned(Q(2*s-1 downto s)) * to_unsigned(N, R1'length), R1'length))), R1'length)); -- r = c - q * n
+                 R2<= std_logic_vector(resize(unsigned(C_shift) - unsigned(std_logic_vector(resize(unsigned(Q(2*s-1 downto k)) * to_unsigned(N, R1'length), R1'length))), R1'length)); -- r = c - q * n
+                 state <= R2_COM;
                  --result<= std_logic_vector(resize(unsigned(result)+unsigned(C_shift) - unsigned(std_logic_vector(resize(unsigned(Q(2*s-1 downto s)) * to_unsigned(N, R1'length), R1'length))), R1'length));
                  --result<= std_logic_vector(resize(unsigned(result)-to_unsigned(N, result'length)+unsigned(C_shift) - unsigned(std_logic_vector(resize(unsigned(Q(2*s-1 downto s)) * to_unsigned(N, R1'length), R1'length))), R1'length));
-                 if unsigned(result) >= to_unsigned(N, result'length) then
-                    result<= std_logic_vector(resize(unsigned(result)-to_unsigned(N, result'length)+unsigned(C_shift) - unsigned(std_logic_vector(resize(unsigned(Q(2*s-1 downto s)) * to_unsigned(N, R1'length), R1'length))), R1'length));
+                 --if unsigned(result) >= to_unsigned(N, result'length) then
+                 --   result<= std_logic_vector(resize(unsigned(result)-to_unsigned(N, result'length)+unsigned(C_shift) - unsigned(std_logic_vector(resize(unsigned(Q(2*s-1 downto s)) * to_unsigned(N, R1'length), R1'length))), R1'length));
+                 --else
+                 --   result<= std_logic_vector(resize(unsigned(result)+unsigned(C_shift) - unsigned(std_logic_vector(resize(unsigned(Q(2*s-1 downto s)) * to_unsigned(N, R1'length), R1'length))), R1'length));
+                 --end if;
+                when R2_COM=> 
+                 if unsigned(R2) >= to_unsigned(N, result'length) then                 
+                   result<= std_logic_vector(resize(unsigned(result)+unsigned(R2) - to_unsigned(N, R1'length) , R1'length));
                  else
-                    result<= std_logic_vector(resize(unsigned(result)+unsigned(C_shift) - unsigned(std_logic_vector(resize(unsigned(Q(2*s-1 downto s)) * to_unsigned(N, R1'length), R1'length))), R1'length));
+                   result<= std_logic_vector(resize(unsigned(result)+unsigned(R2), R1'length));
                  end if;
+                  state <= R3_COM;
                 
+                
+                when R3_COM=> 
+                
+                 if unsigned(result) >= to_unsigned(N, result'length) then                 
+                   result<= std_logic_vector(resize(unsigned(result) - to_unsigned(N, R1'length) , R1'length));
+                 else
+                   result<= std_logic_vector(resize(unsigned(result), R1'length));
+                 end if;
                  if j< l/w-1 then
                       j<=j+1;
                       state <= C_COM;
