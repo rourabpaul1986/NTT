@@ -23,7 +23,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
-
+use ieee.math_real.all;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -37,8 +37,6 @@ entity tb_barrett is
     generic (
         L : integer := 20;        -- Length of the operands
         w : integer := 20;         -- Width of the segments
-        --mu : integer := 59127;         -- # Equivalent to 2^k // N
-        --mu : integer := 15136656;
         N : integer := 72639    -- The modulus       
         
     );
@@ -55,16 +53,18 @@ architecture Behavioral of tb_barrett is
     signal T : std_logic_vector(L-1 downto 0);
      signal done : std_logic := '0';
      signal fault : std_logic := '0';
+     constant logN : positive := positive(ceil(log2(real(N))));
     -- Clock generation process
     constant clk_period : time := 10 ns;
 begin
-
+    assert logN < L
+    report "Error:The number of bit required to store N is greater than or equal to L. Please adjust the parameters."
+    severity FAILURE; 
   -- Instantiate the montgomery_mult module with L as a generic
     uut: entity work.barrett_top
         generic map (
             L => L,
             w=>w,
-            --mu => mu,
             N=>N
         )
         port map (
