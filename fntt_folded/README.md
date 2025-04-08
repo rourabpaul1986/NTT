@@ -1,5 +1,5 @@
 # Folded Architecture of Forwadr NTT
-If vivado and python environment are properly installed just write
+If vivado and python environment are properly installed then just write
 ```
 ./run
 ```
