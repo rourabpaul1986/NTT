@@ -10,12 +10,19 @@ if [ ! -f "$VIVADO_SETTINGS" ]; then
     exit 1
 fi
 
+
+
+
+
+# Source environment scripts
+source "$VIVADO_SETTINGS"
+source "$PYTHON_ENV"
+
 # Validate Python virtual environment
 if [ ! -f "$PYTHON_ENV" ]; then
     echo "❌ Error: Python virtual environment not found at $PYTHON_ENV"
     exit 1
 fi
-
 
 # Check if NumPy is installed
 python3 -c "import numpy" 2>/dev/null
@@ -26,12 +33,6 @@ if [ $? -ne 0 ]; then
 else
     echo "✅ NumPy is installed."
 fi
-
-
-# Source environment scripts
-source "$VIVADO_SETTINGS"
-source "$PYTHON_ENV"
-
 # Arguments
 q=3329
 n=16
