@@ -12,4 +12,5 @@ To verify your output please follow the print in red color in the terminal
 
 ![test bench of forward ntt](./tb.png)
 
-It is to be noted that final output of the forward NTT will (X in terminal) not be actual content of the RAM. It will be the bit reverse value of RAM. That means the address of the ram should be reversed fliped.
+It is to be noted that final output of the forward NTT (as shown in terminal) will  not be actual content of the RAM (in Vivado testbench). It will be the bit reverse value of RAM. That means the address of the ram should be reversed fliped. For and example if you 5th polynomial co-efficnet, you need to reverse 5 ('0101') to 10 ('1010'). Instead of 5th content of the ram you need to take 10th content of the ram. you need to take 4 bits because the number of coefficnets are 16 which need log16=4 bits.
+For verification you need to match the value of X with ram contents.
