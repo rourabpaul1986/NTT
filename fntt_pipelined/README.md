@@ -4,7 +4,7 @@ If vivado and python environment are properly installed then just write
 ./run
 ```
 The ./run file will generate all the required vhdl files of forward ntt.
-The run file has two variables n and q where n is the degree of the polynomial and q is the modulous. You can change the value of n and q in 'src/variant_pkg.vhd. as per your requirement. 
+The run file has two variables n and q where n is the degree of the polynomial and q is the modulous. You can change the value of n and q in line 37 and line 38 of the 'run' file. as per your requirement. 
 To verify your output please follow the print in red color in the terminal
 
 ![ntt forward](./ntt_test.png)
