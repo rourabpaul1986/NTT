@@ -23,3 +23,21 @@ For verification you need to match the value of X with ram contents.
 | fntt.py            | This file is to run forward NTT of A in python, it helps to validate the ram content genreated from RTL |
 | tb/                | Test bench file                        |
 | src/               | All vhd source files                   |
+
+
+| Name                                               | Slice LUTs | Slice Registers | F7 Muxes | F8 Muxes | Slice | LUT as Logic | LUT as Memory | Slice Registers | Block RAM Tile | DSPs |
+|----------------------------------------------------|------------|-----------------|----------|----------|-------|--------------|---------------|-----------------|----------------|------|
+| fntt                                              | 6035       | 3275            | 537      | 214      | 2004  | 6027         | 8             | 3275            | 0              | 4    |
+| w_mem_DUT (w_mem)                                  | 46         | 7               | 21       | 10       | 15    | 46           | 0             |                 | 0              | 0    |
+| U0 (w_mem_dist_mem_gen_v8_0_12)                    | 46         | 7               | 21       | 10       | 15    | 46           | 0             |                 | 0              | 0    |
+| synth_options.dist_mem_inst (w_mem_dist_mem_gen_v8_0_12_synth) | 46 | 7               | 21       | 10       | 15    | 46           | 0             |                 | 0              | 0    |
+| gen_rom.rom_inst (w_mem_rom)                       | 46         | 7               | 21       | 10       | 15    | 46           | 0             |                 | 0              | 0    |
+| u_buf_DUT (u_buff)                                 | 27         | 24              | 0        | 0        | 23    | 27           | 0             |                 | 0              | 0    |
+| poly_mem_DUT (poly_mem)                            | 1803       | 3084            | 516      | 204      | 1763  | 1803         | 0             |                 | 0              | 0    |
+| ijk_gen_DUT (index_gen)                           | 199        | 63              | 0        | 0        | 75    | 199          | 0             |                 | 0              | 0    |
+| barrett_DUT (barrett_pipe)                         | 73         | 26              | 0        | 0        | 23    | 73           | 0             |                 | 0              | 4    |
+| c_shift_DUT (c_shifter)                            | 22         | 14              | 0        | 0        | 11    | 22           | 0             |                 | 0              | 2    |
+| R_come_DUT (r_com)                                 | 54         | 12              | 0        | 0        | 18    | 54           | 0             |                 | 0              | 2    |
+| addr_buf_DUT (addr_buf)                           | 3736       | 70              | 0        | 0        | 1640  | 3728         | 8             |                 | 0              | 0    |
+| UV_sub_DUT (UV_sub)                               | 102        | 0               | 0        | 0        | 51    | 102          | 0             |                 | 0              | 0    |
+| UV_adder_DUT (UV_adder)                           | 42         | 0               | 0        | 0        | 22    | 42           | 0             |                 | 0              | 0    |
