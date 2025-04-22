@@ -1,4 +1,4 @@
-# Folded Architecture of Forward NTT
+# Pipelined Architecture of Forward NTT
 If vivado and python environment are properly installed then just write
 ```
 ./run
