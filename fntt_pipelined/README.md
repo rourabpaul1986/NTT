@@ -29,7 +29,7 @@ Implementation Cost for q=3329 and n=256 and FPGA is xc7a100tcsg324
 |-----------------|-------|--------------|-------------|---------|-------------------|-------------|
 | NTT             |2004   | 169          |  3462          | 1024     | 14.3              | 20  |
 
-
+<!-- 
 | Name                                               | Slice LUTs | Slice Registers | F7 Muxes | F8 Muxes | Slice | LUT as Logic | LUT as Memory | Slice Registers | Block RAM Tile | DSPs |
 |----------------------------------------------------|------------|-----------------|----------|----------|-------|--------------|---------------|-----------------|----------------|------|
 | fntt                                              | 6035       | 3275            | 537      | 214      | 2004  | 6027         | 8             | 3275            | 0              | 4    |
@@ -46,3 +46,4 @@ Implementation Cost for q=3329 and n=256 and FPGA is xc7a100tcsg324
 | addr_buf_DUT (addr_buf)                           | 3736       | 70              | 0        | 0        | 1640  | 3728         | 8             |                 | 0              | 0    |
 | UV_sub_DUT (UV_sub)                               | 102        | 0               | 0        | 0        | 51    | 102          | 0             |                 | 0              | 0    |
 | UV_adder_DUT (UV_adder)                           | 42         | 0               | 0        | 0        | 22    | 42           | 0             |                 | 0              | 0    |
+-->
