@@ -23,10 +23,11 @@ For verification you need to match the value of X with ram contents.
 | fntt.py            | This file is to run forward NTT of A in python, it helps to validate the ram content genreated from RTL |
 | tb/                | Test bench file                        |
 | src/               | All vhd source files                   |
-<br>
+
 ## Number of Clck Cycle=(Number of Stages−1)+Number of Loop
 =(5-1)+1024
-=1028<br>
+=1028
+
 ## number of loop=log_2(n)xn/2
 =log_2(256)x256/2
 =8x128
