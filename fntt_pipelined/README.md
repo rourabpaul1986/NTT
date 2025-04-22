@@ -29,6 +29,9 @@ Implementation Cost for q=3329 and n=256 and FPGA is xc7a100tcsg324
 |-----------------|-------|--------------|-------------|---------|-------------------|-------------|
 | NTT             |2004   | 169          |  3462          | 1024     | 14.3              | 20  |
 
+![pipeline of forward ntt](./fig/NTT_pipes.png)
+
+
 <!-- 
 | Name                                               | Slice LUTs | Slice Registers | F7 Muxes | F8 Muxes | Slice | LUT as Logic | LUT as Memory | Slice Registers | Block RAM Tile | DSPs |
 |----------------------------------------------------|------------|-----------------|----------|----------|-------|--------------|---------------|-----------------|----------------|------|
