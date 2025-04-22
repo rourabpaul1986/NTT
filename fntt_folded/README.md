@@ -17,7 +17,9 @@ For verification you need to match the value of X with ram contents.
 
 | File Names         | Features           Proposed SampleNTT  |
 |--------------------|----------------------------------------|
-| run                | 3000               2000                |
-| run_vivado.tcl     | Base               25% lower           |
-| mem_gen.py         | Base               0.25% fewer         |
-| fntt.py     | 504                336                 |
+| run                | this the main file to execute          |
+| run_vivado.tcl     | run file call this file to run vivado  |
+| mem_gen.py         | the hw file require memory to store w, it generates two polynomials w and A of degree n      |
+| fntt.py            | this file is to run forward NTT of A in python, it helps to validate the ram content genreated from RTL |
+| tb/                | test bench file                        |
+| src/               | all vhd source files                   |
