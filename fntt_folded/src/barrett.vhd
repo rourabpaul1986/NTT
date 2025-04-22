@@ -87,7 +87,7 @@ begin
 
     -- Next state logic
     process(state, start, clk, reset)     
-     variable R2 : std_logic_vector(L-1 downto 0) := (others => '0');
+     variable R2 : std_logic_vector(L downto 0) := (others => '0');
      variable  T_reg : std_logic_vector(L downto 0) := (others => '0'); 
     begin
     
@@ -138,7 +138,7 @@ begin
              when QxN_COM=>  
                  --R1 <= std_logic_vector(resize(unsigned(Q(2*s-1 downto s)) * to_unsigned(N, R1'length), R1'length)); -- q * n
                 -- R2<= std_logic_vector(resize(unsigned(C_shift) - unsigned(std_logic_vector(resize(unsigned(kiu(2*s-1 downto k)) * to_unsigned(q, L), L))), L)); -- r = c - q * n
-                   R2 :=  std_logic_vector(resize(unsigned(C_shift)-unsigned(std_logic_vector(resize(unsigned(resize(unsigned(C_shift) * to_unsigned(mu, C_shift'length), (s + k))(2*s-1 downto k)) * to_unsigned(q, L), L))),L));
+                   R2 :=  std_logic_vector(resize(unsigned(C_shift)-unsigned(std_logic_vector(resize(unsigned(resize(unsigned(C_shift) * to_unsigned(mu, C_shift'length), (s + k))(2*s-1 downto k)) * to_unsigned(q, L), L+1))),L+1));
 
                  
                  if unsigned(R2) >= to_unsigned(q, T_reg'length) then                 
