@@ -20,4 +20,4 @@ For verification you need to match the value of X with ram contents.
 | run                | 3000               2000                |
 | run_vivado.tcl     | Base               25% lower           |
 | mem_gen.py         | Base               0.25% fewer         |
-| SHAKE128 Bytes     | 504                336                 |
+| fntt.py     | 504                336                 |
