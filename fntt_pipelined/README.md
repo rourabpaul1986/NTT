@@ -32,6 +32,7 @@ number of loop=log_2(n)xn/2
 =8x128
 =1024<br>
 Implementation Cost for q=3329 and n=256 and FPGA is xc7a100tcsg324
+
 | Design Name     | Slice |   Power(nw)  | Energy (nJ) | # of CC | Critical Path (ns)| Clock Period (ns)|
 |-----------------|-------|--------------|-------------|---------|-------------------|-------------|
 | NTT             |2004   | 169          |  3462          | 1028     | 14.3              | 20  |
