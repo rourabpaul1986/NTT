@@ -244,11 +244,11 @@ class fNTT:
                 twiddle_factor = self.alpha_modpow_table[self.bit_reverse_table[j]]
                 if verbose:print(f"ct omega forward: {twiddle_factor} j:{j}")
                 CT_Butterfly(i,j,n,x[seqlen * j: seqlen * (j + 1)], x[seqlen * j: seqlen * (j + 1)], twiddle_factor, self.M, seqlen, f, l, w, verbose=False)
-        print("-------------------------------------") 
-        #print(f"\n \033[31mx: {x} (this array should be match with ram content)\033[0m")
-        print("\n\033[31mx: [" + ", ".join(f"{val:#x}" for val in x) + "] (this array should match with RAM content)\033[0m")
+        print("--------------------------------------------------------------------------") 
+        print("\n\033[31mx: [" + ", ".join(f"{val:#x}" for val in x) + "] \033[32m\n\t (THIS ABOVE ARRAY SHOULD  BE MATCH WITH RAM CONTENT)\033[0m")
 
-        print("-------------------------------------")    
+
+        print("--------------------------------------------------------------------------")    
         return bit_reverse([i % self.M for i in x], self.Nlen)
 
     def inverse(self, x_in, f, l, w, verbose=False):
