@@ -23,14 +23,15 @@ For verification you need to match the value of X with ram contents.
 | fntt.py            | This file is to run forward NTT of A in python, it helps to validate the ram content genreated from RTL |
 | tb/                | Test bench file                        |
 | src/               | All vhd source files                   |
-
+<br>
 Number of Clck Cycle=(Number of Stages−1)+Number of Loop
 =(5-1)+1024
-=1028
+=1028<br>
 number of loop=log_2(n)xn/2
 =log_2(256)x256/2
 =8x128
 =1024
+<br>
 Implementation Cost for q=3329 and n=256 and FPGA is xc7a100tcsg324
 | Design Name     | Slice |   Power(nw)  | Energy (nJ) | # of CC | Critical Path (ns)| Clock Period (ns)|
 |-----------------|-------|--------------|-------------|---------|-------------------|-------------|
