@@ -24,6 +24,11 @@ For verification you need to match the value of X with ram contents.
 | tb/                | Test bench file                        |
 | src/               | All vhd source files                   |
 
+Implementation Cost for q=3329 and n=256
+| Design Name     | Slice |   Power(nw)  | Energy (nJ) | # of CC | Critical Path (ns)| Clock Period (ns)|
+|-----------------|-------|--------------|-------------|---------|-------------------|-------------|
+| NTT             |2004   | 169          |            | 1024     | 14.3              | 20
+
 
 | Name                                               | Slice LUTs | Slice Registers | F7 Muxes | F8 Muxes | Slice | LUT as Logic | LUT as Memory | Slice Registers | Block RAM Tile | DSPs |
 |----------------------------------------------------|------------|-----------------|----------|----------|-------|--------------|---------------|-----------------|----------------|------|
