@@ -38,6 +38,12 @@ For verification you need to match the value of X with ram contents.
 |-----------------|-------|--------------|-------------|---------|-------------------|-------------|
 | NTT             |2004   | 169          |  3462          | 1028     | 14.3              | 20  |
 
+## Implementation Cost without PolyMem for q=3329 and n=256 and FPGA is xc7a100tcsg324
+
+| Design Name     | Slice |   Power(nw)  | Energy (nJ) | # of CC | Critical Path (ns)| Clock Period (ns)|
+|-----------------|-------|--------------|-------------|---------|-------------------|------------------|
+| NTT             |104    | 85          |  1747        | 1028    | 15.3              | 20               |
+
 ![pipeline of forward ntt](./fig/NTT_pipes.png)
 
 
