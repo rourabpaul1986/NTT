@@ -90,6 +90,8 @@ spo<=UV_add_O xor UV_sub_O;
         u_d=>u_buf
         ); 
   poly_mem_DUT : entity work.poly_mem
+    generic map (
+    INCLUDE_THIS_COMPONENT => false  -- disables the component
         port map (
         clk   =>clk,
         wr_en =>wr_en,
