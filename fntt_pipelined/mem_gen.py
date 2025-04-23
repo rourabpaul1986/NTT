@@ -9,7 +9,10 @@ import os
 
 def generate_variant_pkg(n, q, filename="./src/variant_pkg.vhd"):
     with open(filename, "w") as f:
-        f.write(f"""library IEEE;
+        f.write(f"""
+-- Company: Personal
+-- Engineer: Dr. Rourab Paul
+library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
@@ -33,8 +36,8 @@ end variant_pkg;
 def generate_poly_mem_vhd(A, filename="./src/poly_mem.vhd"):
     with open(filename, "w") as f:
         f.write("""----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
+-- Company: Personal
+-- Engineer: Dr. Rourab Paul
 -- 
 -- Create Date: {date}
 -- Design Name: 
@@ -59,6 +62,9 @@ use IEEE.NUMERIC_STD.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity poly_mem is
+  generic (
+    INCLUDE_THIS_COMPONENT : boolean := true
+  );
     port(   clk : in std_logic; --clock
             wr_en : in std_logic;   --write enable for port 0
             data_in0 : in std_logic_vector(logq-1 downto 0);   --Input data to port 0.
@@ -87,6 +93,7 @@ architecture Behavioral of poly_mem is
         f.write("""    );
 
 begin
+gen_component : if INCLUDE_THIS_COMPONENT generate
     process(clk)
     begin
         if(rising_edge(clk)) then
@@ -112,7 +119,7 @@ begin
             end if;
         end if;
     end process;
-
+end generate;
 
 end Behavioral;
 """)
