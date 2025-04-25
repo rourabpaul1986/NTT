@@ -47,7 +47,7 @@ for q=3329 and n=256 and FPGA is xc7a100tcsg324
 
 ![pipeline of forward ntt](./fig/NTT_pipes.png)
 
-
+![pipeline of forward ntt block diagram](./fig/NTT_arch.png)
 <!-- 
 | Name                                               | Slice LUTs | Slice Registers | F7 Muxes | F8 Muxes | Slice | LUT as Logic | LUT as Memory | Slice Registers | Block RAM Tile | DSPs |
 |----------------------------------------------------|------------|-----------------|----------|----------|-------|--------------|---------------|-----------------|----------------|------|
