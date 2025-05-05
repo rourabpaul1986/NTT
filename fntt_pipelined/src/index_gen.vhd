@@ -15,6 +15,8 @@ entity index_gen is
         k     : out integer range 0 to N/2-1;
         halflen     : out integer range 0 to N/2-1;
         wr_en : out STD_LOGIC;
+        rd_en_d2 : out std_logic;   --enable port 0.
+        rd_en_d3 : out std_logic;   --enable port 0.
         rd_en : out std_logic;   --enable port 0.
         uv_rst : out std_logic;   --enable port 1.
         ce : out std_logic;   --enable port 1.
@@ -80,7 +82,7 @@ begin
             cycle_counter_d <=  cycle_counter; 
             si_d<=si;
             
-            wr_t2<=wr_t1;
+             wr_t2<=wr_t1;
              wr_t3<=wr_t2;
              wr_t4<= wr_t3;
             if cycle_counter = N/2 - 1 and s_done='0' then
@@ -142,4 +144,6 @@ begin
     rd_en<=wr_t1;
     ce<=wr_t2 or wr_t1;
     uv_rst<=not wr_t4;
+    rd_en_d2<=wr_t2;
+    rd_en_d3<=wr_t3;
 end Behavioral;
