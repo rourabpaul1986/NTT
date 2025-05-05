@@ -1,7 +1,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
-
+use work.variant_pkg.all;
 ENTITY fntt_tb IS
 END fntt_tb;
 
@@ -12,7 +12,11 @@ ARCHITECTURE behavior OF fntt_tb IS
     PORT(
          clk : IN  std_logic;
          rst : IN  std_logic;
-         done : OUT  std_logic
+         spo   : out std_logic_vector(logq-1 downto 0);
+         done : OUT  std_logic;
+          barrett_cfi_fault :  out STD_LOGIC;
+           mem_cfi_fault :  out STD_LOGIC;
+           uv_cfi_fault :  out STD_LOGIC
         );
     END COMPONENT;
    
@@ -20,6 +24,10 @@ ARCHITECTURE behavior OF fntt_tb IS
    SIGNAL clk_tb : std_logic := '0';
    SIGNAL rst_tb : std_logic := '0';
    SIGNAL done_tb : std_logic;
+   SIGNAL spo   :  std_logic_vector(logq-1 downto 0);
+   signal  barrett_cfi_fault :   STD_LOGIC;
+   signal   mem_cfi_fault :  STD_LOGIC;
+   signal    uv_cfi_fault :  STD_LOGIC;
    
    -- Clock period definition
    CONSTANT clk_period : time := 10 ns;
@@ -30,7 +38,11 @@ BEGIN
     uut: fntt PORT MAP (
           clk => clk_tb,
           rst => rst_tb,
-          done => done_tb
+          spo=>spo,
+          done => done_tb,
+          barrett_cfi_fault =>barrett_cfi_fault,
+           mem_cfi_fault => mem_cfi_fault,
+           uv_cfi_fault =>uv_cfi_fault
         );
 
     -- Clock process
