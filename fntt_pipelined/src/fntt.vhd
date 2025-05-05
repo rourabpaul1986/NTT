@@ -36,7 +36,11 @@ entity fntt is
     Port ( clk : in STD_LOGIC;
            rst : in STD_LOGIC;
            spo   : out std_logic_vector(logq-1 downto 0);
-           done : out STD_LOGIC);
+           done : out STD_LOGIC;
+           barrett_cfi_fault :  out STD_LOGIC;
+           mem_cfi_fault :  out STD_LOGIC;
+           uv_cfi_fault :  out STD_LOGIC
+           );
 end fntt;
 
 architecture Behavioral of fntt is
@@ -55,6 +59,11 @@ port(
  spo   : out std_logic_vector(logq-1 downto 0)
 );
 end component;
+-- In the component declaration or synthesis wrapper
+--attribute black_box : boolean;
+--attribute black_box of w_mem_DUT : label is true;
+--attribute black_box of poly_mem_DUT : label is true;
+
 signal  i   :  integer range 0 to logN-1;
 signal  k   :  integer range 0 to N/2-1;
 signal  halflen   :  integer range 0 to N/2-1;
@@ -72,7 +81,9 @@ signal A0,A1 : std_logic_vector(logq-1 downto 0):=(others=>'0');
 signal U,U_buf,O1, V : std_logic_vector(logq-1 downto 0):=(others=>'0');
 signal UV_add_O : std_logic_vector(logq-1 downto 0):=(others=>'0');
 signal UV_sub_O : std_logic_vector(logq-1 downto 0):=(others=>'0');
-signal wr_en,  rd_en ,  ce : std_logic:='0';
+signal wr_en, wr_t2, wr_t3, rd_en, ce,u_buff_rst : std_logic:='0';
+--signal barrett_cfi_fault, mem_cfi_fault, uv_cfi_fault : std_logic:='0';
+ signal cfi_reg : std_logic_vector(3 downto 0) := (others => '0');
 begin
 --    poly_memA_DUT : poly_memA 
 --     port map (   
@@ -80,18 +91,21 @@ begin
 --        a =>k_addr,
 --        spo  =>A
 --        ); 
-spo<=UV_add_O xor UV_sub_O;
-
-  u_buf_DUT : entity work.u_buff
+spo<=UV_add_O xor UV_sub_O;--fake output
+u_buff_rst<= not rd_en;
+  u_buf_DUT : entity work.u_buff 
         port map (
         clk   =>clk,
         rst =>rst,
         u=>u,
         u_d=>u_buf
         ); 
-  poly_mem_DUT : entity work.poly_mem
+
+
+poly_mem_DUT : entity work.poly_mem
     generic map (
-    INCLUDE_THIS_COMPONENT => false  -- disables the component
+    INCLUDE_THIS_COMPONENT => true  -- disables the component
+  )
         port map (
         clk   =>clk,
         wr_en =>wr_en,
@@ -126,7 +140,7 @@ spo<=UV_add_O xor UV_sub_O;
         spo  =>w
         );  
 
-   ijk_gen_DUT: entity work.index_gen
+   CTRL_DUT: entity work.index_gen
         port map (
         clk   =>clk,
         reset =>rst,
@@ -136,6 +150,8 @@ spo<=UV_add_O xor UV_sub_O;
         halflen=>halflen,
         wr_en =>wr_en,
         rd_en =>rd_en,
+        rd_en_d2 =>wr_t2,
+        rd_en_d3 =>wr_t3,
         uv_rst=>uv_rst,
         ce =>ce,
         done  =>index_done
@@ -154,9 +170,12 @@ spo<=UV_add_O xor UV_sub_O;
    k_addr_rd0<=std_logic_vector(to_unsigned(k+2*j*halflen, logN));
    
    -- barrett_rst<=not rd_en;
-   barrett_start<=rd_en or wr_en or ce;
+   --barrett_start<=rd_en or wr_en or ce;
+    --barrett_start<=wr_t2 or wr_en;
+   barrett_start<=wr_t2 or wr_t3;
    barrett_rst<= not barrett_start;
-   poly_mem_ce<=rd_en or wr_en or (not uv_rst);
+   --poly_mem_ce<=rd_en or wr_en or (not uv_rst);
+   poly_mem_ce<=rd_en or wr_en;
      barrett_DUT: entity work.barrett_pipe
         port map (
             clk => clk,
@@ -178,7 +197,7 @@ spo<=UV_add_O xor UV_sub_O;
         O   =>UV_add_O
     );
     
-            UV_sub_DUT: entity work.UV_sub
+      UV_sub_DUT: entity work.UV_sub
        Port map (
         rst =>uv_rst,
         U   =>U_buf,
@@ -186,4 +205,25 @@ spo<=UV_add_O xor UV_sub_O;
         O   =>UV_sub_O
     );
     done<=index_done;
+    
+    
+    
+      CFI_DUT: entity work.cfi
+       Port map (
+        clk          =>clk,
+        rst          =>rst,
+        rd_en        =>rd_en,
+        wr_t2        =>wr_t2,
+        wr_t3        =>wr_t3,
+        barrett_rst =>barrett_rst,
+        barrett_start =>barrett_start,
+        barrett_done =>barrett_done,
+        wr_en        =>wr_en,
+        poly_mem_ce=>poly_mem_ce,
+        uv_rst    =>uv_rst,
+        barrett_cfi_fault=>barrett_cfi_fault,
+        mem_cfi_fault=>mem_cfi_fault,
+        uv_cfi_fault=>uv_cfi_fault
+    );
+    
 end Behavioral;
