@@ -14,9 +14,9 @@ ARCHITECTURE behavior OF fntt_tb IS
          rst : IN  std_logic;
          spo   : out std_logic_vector(logq-1 downto 0);
          done : OUT  std_logic;
-          barrett_cfi_fault :  out STD_LOGIC;
-           mem_cfi_fault :  out STD_LOGIC;
-           uv_cfi_fault :  out STD_LOGIC
+         cfi_fault :  out STD_LOGIC;
+         ccc_fault :  out STD_LOGIC;
+         mem_addr_fault :  out STD_LOGIC
         );
     END COMPONENT;
    
@@ -25,9 +25,10 @@ ARCHITECTURE behavior OF fntt_tb IS
    SIGNAL rst_tb : std_logic := '0';
    SIGNAL done_tb : std_logic;
    SIGNAL spo   :  std_logic_vector(logq-1 downto 0);
-   signal  barrett_cfi_fault :   STD_LOGIC;
-   signal   mem_cfi_fault :  STD_LOGIC;
-   signal    uv_cfi_fault :  STD_LOGIC;
+   signal  cfi_fault :   STD_LOGIC;
+   signal ccc_fault :   STD_LOGIC;
+   signal mem_addr_fault :   STD_LOGIC;
+
    
    -- Clock period definition
    CONSTANT clk_period : time := 10 ns;
@@ -40,9 +41,9 @@ BEGIN
           rst => rst_tb,
           spo=>spo,
           done => done_tb,
-          barrett_cfi_fault =>barrett_cfi_fault,
-           mem_cfi_fault => mem_cfi_fault,
-           uv_cfi_fault =>uv_cfi_fault
+          cfi_fault =>cfi_fault,
+          ccc_fault =>ccc_fault,
+          mem_addr_fault=>mem_addr_fault
         );
 
     -- Clock process
