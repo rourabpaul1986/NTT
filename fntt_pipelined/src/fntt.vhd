@@ -37,9 +37,9 @@ entity fntt is
            rst : in STD_LOGIC;
            spo   : out std_logic_vector(logq-1 downto 0);
            done : out STD_LOGIC;
-           barrett_cfi_fault :  out STD_LOGIC;
-           mem_cfi_fault :  out STD_LOGIC;
-           uv_cfi_fault :  out STD_LOGIC
+           cfi_fault :  out STD_LOGIC;
+           ccc_fault :  out STD_LOGIC;
+           mem_addr_fault :  out STD_LOGIC
            );
 end fntt;
 
@@ -221,9 +221,33 @@ poly_mem_DUT : entity work.poly_mem
         wr_en        =>wr_en,
         poly_mem_ce=>poly_mem_ce,
         uv_rst    =>uv_rst,
-        barrett_cfi_fault=>barrett_cfi_fault,
-        mem_cfi_fault=>mem_cfi_fault,
-        uv_cfi_fault=>uv_cfi_fault
+        cfi_fault=>cfi_fault
+    );
+    
+        
+      CCC_DUT: entity work.ccc
+       Port map (
+        clk          =>clk,
+        rst          =>rst,
+        rd_en        =>rd_en,
+        wr_t2        =>wr_t2,
+        wr_t3        =>wr_t3,
+        barrett_rst =>barrett_rst,
+        barrett_start =>barrett_start,
+        barrett_done =>barrett_done,
+        wr_en        =>wr_en,
+        poly_mem_ce=>poly_mem_ce,
+        uv_rst    =>uv_rst,
+        ccc_fault=>ccc_fault
+    );
+    
+        MARC_DUT: entity work.marc
+       Port map (
+          i=>i,
+          j=>j,
+          k=>k,
+          halflen=>halflen,
+        addr_fault=>mem_addr_fault
     );
     
 end Behavioral;
