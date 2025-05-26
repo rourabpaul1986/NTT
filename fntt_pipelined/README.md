@@ -33,10 +33,10 @@ For verification you need to match the value of X with ram contents.
 =8x128
 =1024
 ## Implementation Cost 
-for q=3329 and n=256 and FPGA is xc7a100tcsg324
+<!-- for q=3329 and n=256 and FPGA is xc7a100tcsg324
 | Design Name     | Slice |   Power(mw)  | Energy (nJ) | # of CC | Critical Path (ns)| Clock Period (ns)|
 |-----------------|-------|--------------|-------------|---------|-------------------|-------------|
-| NTT             |2004   | 169          |  3462          | 1028     | 14.3              | 20  |
+| NTT             |2004   | 169          |  3462          | 1028     | 14.3              | 20  | -->
 
  without PolyMem for q=3329 and n=256 and FPGA is xc7a100tcsg324
 
