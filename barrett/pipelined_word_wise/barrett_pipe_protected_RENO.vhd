@@ -45,6 +45,7 @@ entity barrett_pipe_protected_RENO is
 end barrett_pipe_protected_RENO;
 
 architecture Behavioral of barrett_pipe_protected_RENO is
+
  signal  c_shift, c_shift_fault :  STD_LOGIC_VECTOR (2*logq-1 downto 0);
  signal        c, c_fault :  std_logic_vector((2*w + ((l/w-1 + l/w-1)*w))-1 downto 0);
  signal cshift_done, cshift_done_fault : std_logic; 
@@ -129,7 +130,7 @@ begin
         ); 
         
     
-  fault<= '1' when R/=R_fault else '0';      
+  fault<= '1' when R/=R_fault and done_rcom='1' and done_rcom_fault='1' else '0';           
         
          stage_2: entity work.r_com
         port map (
