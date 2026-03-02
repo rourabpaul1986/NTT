@@ -47,8 +47,8 @@ entity RESWO_c_shifter is
 end RESWO_c_shifter;
 
 architecture Behavioral of RESWO_c_shifter is
-constant k : integer := 2*logq; --32 for w=4
-constant mu : integer := (2**(2*logq)) / q; --2^k//n
+
+
 signal C_shift_buf :  std_logic_vector((2*w + ((l/w-1 + l/w-1)*w) + k)-1 downto 0) := (others => '0'); 
 signal done_buf : std_logic; 
 signal zero_pad : std_logic_vector(k-1 downto 0) := (others => '0'); -- No change
@@ -56,6 +56,7 @@ signal zero_pad : std_logic_vector(k-1 downto 0) := (others => '0'); -- No chang
   signal delta : integer range 0 to 2**w-1:=7; -- Adjusted range to allow for negative values
   signal i1 : integer range 0 to w-1 := 3; -- Optimized for loop index
 signal j1 : integer range 0 to w-1 := 0; -- Optimized for loop index
+signal mult_reg : unsigned((2*w + ((l/w-1 + l/w-1)*w))-1 + k - 1 downto 0);
 begin
 -- delta <= 2**i1-2**j1 when Aw(i1)='1' and Aw(j1)='0' else
 --          2**j1-2**i1 when Aw(i1)='0' and Aw(j1)='1' else
@@ -67,6 +68,7 @@ begin
      variable m : std_logic_vector(2*w-1 downto 0) := (others => '0'); -- Optimized bit-width
      variable Aw_sig :  STD_LOGIC_VECTOR (w-1 downto 0);  
      variable Bw_sig :  STD_LOGIC_VECTOR (w-1+3 downto 0); 
+     variable tmp : std_logic;
     begin
     
          if rst = '1' then
@@ -75,14 +77,15 @@ begin
          elsif rising_edge(clk) then
                 if start = '1' then
                  Aw_sig:=Aw;
-                  Bw_sig := std_logic_vector(
-             unsigned(Bw & "000") - unsigned("000" & Bw)
-         );
-                Aw_sig(i1) := Aw_sig(i1) xor Aw_sig(j1);
-                Aw_sig(j1) := Aw_sig(i1) xor Aw_sig(j1);
-                Aw_sig(i1) := Aw_sig(i1) xor Aw_sig(j1);
-                m := std_logic_vector(unsigned(Aw_sig) * unsigned(Bw) + to_integer(unsigned(Bw_sig)));
-
+                 Bw_sig := std_logic_vector(unsigned(Bw & "000") - unsigned("000" & Bw) );
+--                Aw_sig(i1) := Aw_sig(i1) xor Aw_sig(j1);
+--                Aw_sig(j1) := Aw_sig(i1) xor Aw_sig(j1);
+--                Aw_sig(i1) := Aw_sig(i1) xor Aw_sig(j1);
+                  tmp := Aw_sig(i1);
+                  Aw_sig(i1) := Aw_sig(j1);
+                  Aw_sig(j1) := tmp;
+                  m := std_logic_vector(unsigned(Aw_sig) * unsigned(Bw) + to_integer(unsigned(Bw_sig)));
+                  
                  if(idx_a=0 and idx_b=0) then
                     Q1(2*w-1 downto 0):=std_logic_vector(to_unsigned((to_integer(unsigned(m))), 2*w));
                  elsif(q1'length /= 2*w+(idx_a+idx_b)*w) then 
@@ -91,7 +94,8 @@ begin
                  else
                     Q1(2*w+(idx_a+idx_b)*w-1 downto 0):=std_logic_vector(to_unsigned((to_integer(unsigned(m)) ), 2*w)) & zero_pad((idx_a+idx_b)*w-1 downto 0);                   
                  end if;
-                C_shift_buf<=std_logic_vector(unsigned(Q1)* to_unsigned(mu, k));
+                C_shift_buf<=std_logic_vector(unsigned(Q1)* mu_vec);
+                --c_shift <= std_logic_vector(mult_reg(mult_reg'high downto mult_reg'high - k + 1));
                 done_buf<='1';
                 c<=q1;
                 end if;
