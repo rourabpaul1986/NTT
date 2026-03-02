@@ -81,10 +81,14 @@ begin
             done_buf<='0';
          elsif rising_edge(clk) then
                 if start = '1' then
-                 Aw_sig:=STD_LOGIC_VECTOR(UNSIGNED(NOT Aw) + 1);
-                 Bw_sig:=STD_LOGIC_VECTOR(UNSIGNED(NOT Bw) + 1);
-                 m := std_logic_vector(to_unsigned((to_integer(unsigned(Aw_sig)) * to_integer(unsigned(Bw_sig))), 2*w));
+--                 Aw_sig:=STD_LOGIC_VECTOR(UNSIGNED(NOT Aw) + 1);
+--                 Bw_sig:=STD_LOGIC_VECTOR(UNSIGNED(NOT Bw) + 1);
+--                 m := std_logic_vector(to_unsigned((to_integer(unsigned(Aw_sig)) * to_integer(unsigned(Bw_sig))), 2*w));
                  --m :=std_logic_vector(resize(unsigned(Aw_sig), w) *  resize(unsigned(Bw_sig), w));
+              Aw_sig := std_logic_vector(-signed(Aw));
+              Bw_sig := std_logic_vector(-signed(Bw));
+
+              m := std_logic_vector(signed(Aw_sig) * signed(Bw_sig));
 
                  if(idx_a=0 and idx_b=0) then
                     Q1(2*w-1 downto 0):=std_logic_vector(to_unsigned((to_integer(unsigned(m))), 2*w));
