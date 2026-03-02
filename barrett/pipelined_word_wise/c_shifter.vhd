@@ -47,8 +47,8 @@ entity c_shifter is
 end c_shifter;
 
 architecture Behavioral of c_shifter is
-constant k : integer := 2*logq; --32 for w=4
-constant mu : integer := (2**(2*logq)) / q; --2^k//n
+--constant k : integer := 2*logq; --32 for w=4
+--constant mu : integer := (2**(2*logq)) / q; --2^k//n
 signal C_shift_buf :  std_logic_vector((2*w + ((l/w-1 + l/w-1)*w) + k)-1 downto 0) := (others => '0'); 
 signal done_buf : std_logic; 
 signal zero_pad : std_logic_vector(k-1 downto 0) := (others => '0'); -- No change
@@ -58,7 +58,7 @@ signal zero_pad : std_logic_vector(k-1 downto 0) := (others => '0'); -- No chang
 
 attribute use_dsp : string;
 attribute use_dsp of m : signal is "no";
-
+  signal  Q2 : std_logic_vector((2*w + ((l/w-1 + l/w-1)*w))-1 downto 0) := (others => '0'); -- 24
 begin
 
 m<=std_logic_vector(unsigned(a) * unsigned(b));
@@ -82,9 +82,11 @@ m<=std_logic_vector(unsigned(a) * unsigned(b));
                  else
                     Q1(2*w+(idx_a+idx_b)*w-1 downto 0):=std_logic_vector(to_unsigned((to_integer(unsigned(m)) ), 2*w)) & zero_pad((idx_a+idx_b)*w-1 downto 0);                   
                  end if;
-                C_shift_buf<=std_logic_vector(unsigned(Q1)* to_unsigned(mu, k));
+                --C_shift_buf<=std_logic_vector(unsigned(Q1)* to_unsigned(mu, k));
+                C_shift_buf<=std_logic_vector(unsigned(Q1)* mu_vec);
                 done_buf<='1';
                 c<=q1;
+                
                 end if;
          end if;
      end process;       
