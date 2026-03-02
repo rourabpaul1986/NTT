@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 04/11/2025 11:57:03 AM
 -- Design Name: 
--- Module Name: r_come - Behavioral
+-- Module Name: r_com - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
