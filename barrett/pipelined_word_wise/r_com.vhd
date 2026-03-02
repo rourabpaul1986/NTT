@@ -40,8 +40,8 @@ end r_com;
 architecture Behavioral of r_com is
 signal done_buf : std_logic; 
 signal  T_reg1 : std_logic_vector(logq downto 0) := (others => '0'); 
-constant mu : integer := (2**(2*logq)) / q; --2^k//n
-constant k : integer := 2*logq; --32 for w=4
+--constant mu : integer := (2**(2*logq)) / q; --2^k//n
+--constant k : integer := 2*logq; --32 for w=4
 signal result : std_logic_vector(logq-1 downto 0) := (others => '0');
 shared variable R2 : std_logic_vector(logq downto 0) := (others => '0');
 begin
