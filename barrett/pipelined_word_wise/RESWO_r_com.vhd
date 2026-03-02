@@ -39,8 +39,8 @@ end RESWO_r_com;
 architecture Behavioral of RESWO_r_com is
 signal done_buf : std_logic; 
 signal  T_reg1 : std_logic_vector(logq downto 0) := (others => '0'); 
-constant mu : integer := (2**(2*logq)) / q; --2^k//n
-constant k : integer := 2*logq; --32 for w=4
+--constant mu : integer := (2**(2*logq)) / q; --2^k//n
+--constant k : integer := 2*logq; --32 for w=4
 signal result : std_logic_vector(logq-1 downto 0) := (others => '0');
 signal R2 : std_logic_vector(logq downto 0) := (others => '0');
 begin
@@ -61,7 +61,7 @@ begin
                   (to_integer(unsigned(c)) - to_integer(unsigned(c_shift)*q)), logq+1)
                   --(to_integer(unsigned(c)) - to_integer((unsigned(c)*mu*q)(2*logq-1 downto logq))), logq)
                     );
-
+                  
                 end if;
           end if;
      end process; 
