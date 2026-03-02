@@ -129,7 +129,7 @@ begin
         ); 
         
     
-  fault<= '1' when R/=R_fault else '0';      
+   fault<= '1' when R/=R_fault  else '0';        
         
          stage_2: entity work.r_com
         port map (
