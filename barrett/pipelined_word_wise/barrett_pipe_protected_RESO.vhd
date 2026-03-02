@@ -114,7 +114,7 @@ begin
            done =>cshift_done
         ); 
         
-           stage_1_fault: entity work.RESO_c_shifter
+           stage_1_fault: entity work.RESO_c_shifter_1bit
         port map (
             clk => clk,
             rst => reset,
@@ -129,7 +129,7 @@ begin
         ); 
         
     
-  fault<= '1' when R/=R_fault else '0';      
+  fault<= '1' when R/=R_fault and done_rcom='1' and done_rcom_fault='1' else '0';      
         
          stage_2: entity work.r_com
         port map (
