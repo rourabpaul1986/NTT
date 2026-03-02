@@ -32,7 +32,7 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity RESO_c_shifter is
+entity RESO_c_shifter_1bit is
     Port ( clk : in STD_LOGIC;
            rst : in STD_LOGIC;
            start : in STD_LOGIC;
@@ -44,20 +44,21 @@ entity RESO_c_shifter is
            c : out  std_logic_vector((2*w + ((l/w-1 + l/w-1)*w))-1 downto 0);
            done : out STD_LOGIC
            );
-end RESO_c_shifter;
+end RESO_c_shifter_1bit;
 
-architecture Behavioral of RESO_c_shifter is
+architecture Behavioral of RESO_c_shifter_1bit is
 constant k : integer := 2*logq; --32 for w=4
 constant mu : integer := (2**(2*logq)) / q; --2^k//n
 signal C_shift_buf :  std_logic_vector((2*w + ((l/w-1 + l/w-1)*w)+2 + k)-1 downto 0) := (others => '0'); 
---attribute use_dsp : string;
---attribute use_dsp of C_shift_buf : signal is "yes";
+attribute use_dsp : string;
+attribute use_dsp of C_shift_buf : signal is "yes";
 signal done_buf : std_logic; 
 signal zero_pad : std_logic_vector(k-1 downto 0) := (others => '0'); -- No change
 -- signal Q : std_logic_vector((2*w + ((l/w-1 + l/w-1)*w))-1 downto 0) := (others => '0'); -- 24
   signal delta : integer range 0 to 2**w-1:=7; -- Adjusted range to allow for negative values
   signal i1 : integer range 0 to w-1 := 3; -- Optimized for loop index
 signal j1 : integer range 0 to w-1 := 0; -- Optimized for loop index
+signal  Q2 : std_logic_vector((2*w + ((l/w-1 + l/w-1)*w))-1+2 downto 0) := (others => '0'); -- 24
 begin
 -- delta <= 2**i1-2**j1 when Aw(i1)='1' and Aw(j1)='0' else
 --          2**j1-2**i1 when Aw(i1)='0' and Aw(j1)='1' else
@@ -85,18 +86,21 @@ begin
                  Bw_sig:=Bw & '0';
                  --m := std_logic_vector(to_unsigned((to_integer(unsigned(Aw_sig)) * to_integer(unsigned(Bw_sig))), 2*w+2));
                  m :=std_logic_vector(resize(unsigned(Aw_sig), w+1) *  resize(unsigned(Bw_sig), w+1));
-
+                 
                  if(idx_a=0 and idx_b=0) then
+                    q1(q1'length - 1 downto 2*w+2)  :=(others=>'0');  
                     Q1(2*w-1+2 downto 0):=std_logic_vector(to_unsigned((to_integer(unsigned(m))), 2*w+2));
                  elsif(q1'length /= 2*w+(idx_a+idx_b)*w) then 
-                    q1(q1'length - 1 downto 2*w+(idx_a+idx_b)*w)  :=(others=>'0');                
-                    Q1(2*w+(idx_a+idx_b)*w-1 downto 0):=std_logic_vector(to_unsigned((to_integer(unsigned(m))), 2*w+2)) & zero_pad((idx_a+idx_b)*w-1-2 downto 0);                   
+                    q1(q1'length - 1 downto 2*w+(idx_a+idx_b)*w-2)  :=(others=>'0');                
+                    Q1(2*w+(idx_a+idx_b)*w-1+2 downto 0):=std_logic_vector(to_unsigned((to_integer(unsigned(m))), 2*w+2)) & zero_pad((idx_a+idx_b)*w-1 downto 0);                   
                  else
-                    Q1(2*w+(idx_a+idx_b)*w-1 downto 0):=std_logic_vector(to_unsigned((to_integer(unsigned(m)) ), 2*w+2)) & zero_pad((idx_a+idx_b)*w-1-2 downto 0);                   
+                    Q1(2*w+(idx_a+idx_b)*w-1+2 downto 0):=std_logic_vector(to_unsigned((to_integer(unsigned(m)) ), 2*w+2)) & zero_pad((idx_a+idx_b)*w-1 downto 0);                   
                  end if;
-                C_shift_buf<=std_logic_vector(unsigned(Q1)* to_unsigned(mu, k));
+                --C_shift_buf<=std_logic_vector(unsigned(Q1)* to_unsigned(mu, k));
+                C_shift_buf<=std_logic_vector(unsigned(Q1)* mu_vec);
                 done_buf<='1';
                 c<=q1(q1'length-1 downto 2);
+                Q2<=Q1;
                 end if;
          end if;
      end process;       
