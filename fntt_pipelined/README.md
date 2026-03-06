@@ -39,12 +39,12 @@ For verification you need to match the value of X with ram contents.
 | NTT             |2004   | 169          |  3462          | 1028     | 14.3              | 20  | -->
 
  without PolyMem for q=3329 and n=256 and FPGA is xc7a100tcsg324
-
+The NTT resource usgae does not include memory overhead of olynomial memory and twiddle factor memory
 | Design Name     | Slice |   Power(mw)  | Energy (nJ) | # of CC | Critical Path (ns)| Clock Period (ns)|
 |-----------------|-------|--------------|-------------|---------|-------------------|------------------|
 | NTT             |104    |  85          |  1747        | 1028    | 15.3             | 20               |
 | CFI with NTT    |106    |  86          |  1767        | 1028    | 14               | 20               |
-The NTT resource usgae does not include memory overhead of olynomial memory and twiddle factor memory
+
 ![pipeline of forward ntt](./fig/NTT_pipes.png)
 
 ![pipeline of forward ntt block diagram](./fig/NTT_arch.png)
