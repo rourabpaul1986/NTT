@@ -44,7 +44,7 @@ For verification you need to match the value of X with ram contents.
 |-----------------|-------|--------------|-------------|---------|-------------------|------------------|
 | NTT             |104    |  85          |  1747        | 1028    | 15.3             | 20               |
 | CFI with NTT    |106    |  86          |  1767        | 1028    | 14               | 20               |
-
+The NTT resource usgae does not include memory overhead of olynomial memory and twiddle factor memory
 ![pipeline of forward ntt](./fig/NTT_pipes.png)
 
 ![pipeline of forward ntt block diagram](./fig/NTT_arch.png)
